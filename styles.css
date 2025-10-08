@@ -1,0 +1,103 @@
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  background: linear-gradient(135deg, #e0e3e7 0%, #bfc3c9 100%); /* wolf grey gradient */
+  color: #222;
+  min-height: 100vh;
+  scroll-behavior: smooth;
+}
+  
+  .navbar {
+    background-color: #002366;
+    padding: 1em 2em;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  
+  .navbar ul {
+    list-style: none;
+    display: flex;
+    gap: 1.5em;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .navbar a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 0.5em 1em;
+    border-radius: 4px;
+    transition: background 0.2s, color 0.2s;
+  }
+  .navbar a.active, .navbar a:hover {
+    background: #3366ff;
+    color: #ffcc00;
+  }
+  
+  .hero {
+    padding: 5em 2em 4em 2em;
+    text-align: center;
+    background: linear-gradient(90deg, #0033cc 0%, #3366ff 100%);
+    color: white;
+    border-radius: 0 0 32px 32px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+  }
+  
+  .hero h2 span {
+    color: #ffcc00;
+    font-weight: bold;
+  }
+  
+  .section {
+    max-width: 800px;
+    margin: 3em auto;
+    background: rgba(255,255,255,0.85);
+    border-radius: 16px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+    padding: 2.5em 2em;
+    animation: fadeIn 1s;
+  }
+  .section h2 {
+    color: #0033cc;
+    margin-top: 0;
+    letter-spacing: 1px;
+  }
+  .section ul {
+    padding-left: 1.2em;
+    margin: 1em 0;
+  }
+  .section a {
+    color: #0033cc;
+    text-decoration: underline;
+    transition: color 0.2s;
+  }
+  .section a:hover {
+    color: #ffcc00;
+  }
+  
+  footer {
+    background-color: #002366;
+    color: white;
+    text-align: center;
+    padding: 1em 0;
+    border-radius: 16px 16px 0 0;
+    margin-top: 3em;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+  }
+  
+  .animate-fadein {
+    animation: fadeIn 1s ease-in;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
