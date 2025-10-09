@@ -5,11 +5,80 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Prince Booi | Software Developer Portfolio</title>
   <link rel="stylesheet" href="styles.css" />
+  <!-- Added: styles to indent About ("Who") page content -->
+  <style>
+    /* Indent paragraphs and lists in the About section (Who page) */
+    #about {
+      padding-left: 1rem;
+    }
+    #about p,
+    #about ul {
+      margin-left: 1.25rem;
+    }
+    #about ul {
+      padding-left: 1rem;
+      list-style-position: outside;
+    }
+    #about ul li {
+      margin-bottom: 0.45rem;
+    }
+    /* Add a little spacing under subheadings */
+    #about h3 {
+      margin-top: 1rem;
+      margin-bottom: 0.4rem;
+    }
+    /* Keep the profile image centered */
+    #about .profile-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 2em 0 1.5em 0;
+    }
+    /* speech-bubble styles for skills/tools/soft-skills */
+    .bubbles {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin: 0.5rem 0 1.25rem 0;
+      padding: 0;
+      list-style: none;
+    }
+    .bubble {
+      position: relative;
+      background: #eef2ff;
+      color: #0f172a;
+      padding: 0.45rem 0.9rem;
+      border-radius: 18px;
+      font-size: 0.95rem;
+      box-shadow: 0 4px 10px rgba(2,6,23,0.06);
+      border: 1px solid rgba(79,70,229,0.12);
+      display: inline-flex;
+      align-items: center;
+    }
+    /* small left-facing tail to resemble a formal speech bubble */
+    .bubble::before {
+      content: "";
+      position: absolute;
+      left: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0;
+      height: 0;
+      border-top: 7px solid transparent;
+      border-bottom: 7px solid transparent;
+      border-right: 8px solid #eef2ff;
+      filter: drop-shadow(-1px 1px 0 rgba(2,6,23,0.02));
+    }
+    /* Slightly different tone for soft-skills to separate visually (optional) */
+    .bubble.soft { background: #eef2ff; border-color: rgba(79,70,229,0.12); }
+    .bubble.soft::before { border-right-color: #eef2ff; }
+  </style>
   <script defer src="script.js"></script>
 </head>
 <body>
-  <header class="navbar" style="display: flex; flex-direction: column; align-items: center;">
-    <img src="pb-logo.jpeg" alt="PB Logo" class="logo" style="height:60px; width:60px; object-fit:cover; border-radius:12px; background:#222; padding:4px; display:block; margin: 0 auto;" />
+  <header class="navbar" style="display: flex; flex-direction: column; align-items: center; gap:0.5rem; padding-top:0.5rem;">
+    <img src="pb-logo.jpeg" alt="PB Logo" class="logo" style="height:60px; width:60px; object-fit:cover; border-radius:12px; background:#222; padding:4px; display:block; margin: 0 auto 0.5rem;" />
     <nav style="width:100%; display:flex; justify-content:center;">
       <ul style="display:flex; gap:1.5em; justify-content:center; align-items:center; list-style:none; margin:0; padding:0;">
         <li><a href="#home" class="nav-link">Home</a></li>
@@ -23,9 +92,12 @@
   </header>
   <main>
     <section id="home" class="hero animate-fadein">
-      <div class="hero-text">
-        <h2>Hi, I'm <span>Prince Booi</span></h2>
-        <p>Aspiring Software Developer</p>
+      <div class="hero-inner" style="display:flex; align-items:center; gap:1rem; flex-wrap:wrap; justify-content:center;">
+        <img src="pro-pic.jpeg" alt="Prince Booi Photo" style="width:160px; height:160px; object-fit:cover; object-position:center 75%; border-radius:50%; box-shadow:0 6px 20px rgba(0,0,0,0.12); border:4px solid #bfc3c9; order:0;" />
+        <div class="hero-text" style="text-align:left;">
+          <h2>Hi, I'm <span>Prince Booi</span></h2>
+          <p>Aspiring Software Developer</p>
+        </div>
       </div>
     </section>
     <section id="about" class="section">
@@ -61,11 +133,6 @@
         <li>I enjoy spotting patterns—whether in code, trends, or real-life systems—and turning them into efficient solutions.</li>
         <li>Outside of coding, I’m passionate about technology for social good, especially in accessibility and community impact.</li>
       </ul>
-     
-      <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; margin:2em 0 1.5em 0;">
-  <img src="pro-pic.jpeg" alt="Prince Booi Photo" style="width:180px; height:180px; object-fit:cover; object-position:center 75%; border-radius:50%; box-shadow:0 4px 24px rgba(0,0,0,0.13); margin-bottom:0.7em; border:4px solid #bfc3c9; background:#fff;" />
-        <em style="font-size:1.05em; color:#0033cc;">Photo: Prince Booi</em>
-      </div>
     </section>
     <section id="projects" class="section">
       <h2>Projects</h2>
@@ -83,37 +150,48 @@
     <section id="skills" class="section">
       <h2>Skills</h2>
       <p>I am a detail-oriented and adaptable junior developer with a passion for building user-focused solutions. I thrive in collaborative environments and am always eager to learn new technologies and best practices. My strengths include analytical problem-solving, clear communication, and a strong foundation in modern development tools and practices.</p>
+
       <h3>Technical Skills</h3>
-      <ul>
-        <li><strong>Programming Languages:</strong> Java, Python, JavaScript, HTML, CSS</li>
-  <li><strong>Core Computer Science:</strong> Concepts (Object-Oriented Programming, Discrete Structures, Algorithms, Data Structures, Operating Systems, Information Security, Computer Architecture)</li>
-  <li><strong>Web & Mobile:</strong> Web Development, Internet Programming, Mobile Computing</li>
-  <li><strong>Database:</strong> MySQL, PL/SQL</li>
-  <li><strong>Software Engineering:</strong> Software Project, SDLC (Software Development Life Cycle), Software Engineering Fundamentals</li>
-      </ul>
+      <div class="bubbles" role="list" aria-label="Technical skills">
+        <span class="bubble" role="listitem">Java</span>
+        <span class="bubble" role="listitem">Python</span>
+        <span class="bubble" role="listitem">JavaScript</span>
+        <span class="bubble" role="listitem">HTML &amp; CSS</span>
+        <span class="bubble" role="listitem">MySQL / PL/SQL</span>
+        <span class="bubble" role="listitem">OOP, Algorithms &amp; Data Structures</span>
+        <span class="bubble" role="listitem">Web &amp; Mobile Development</span>
+        <span class="bubble" role="listitem">SDLC / Software Engineering</span>
+      </div>
+
       <h3>Tools</h3>
-      <ul>
-        <li>Git</li>
-        <li>VS Code</li>
-      </ul>
+      <div class="bubbles" role="list" aria-label="Tools">
+        <span class="bubble" role="listitem">Git</span>
+        <span class="bubble" role="listitem">VS Code</span>
+      </div>
+
       <h3>Soft Skills</h3>
-      <ul>
-        <li>Analytical problem-solving</li>
-        <li>Pattern recognition</li>
-        <li>Communication</li>
-        <li>Adaptability</li>
-        <li>Customer-focused solutions</li>
-        <li>Teamwork</li>
-        <li>Time management</li>
-      </ul>
+      <div class="bubbles" role="list" aria-label="Soft skills">
+        <span class="bubble soft" role="listitem">Analytical problem‑solving</span>
+        <span class="bubble soft" role="listitem">Pattern recognition</span>
+        <span class="bubble soft" role="listitem">Clear communication</span>
+        <span class="bubble soft" role="listitem">Adaptability</span>
+        <span class="bubble soft" role="listitem">Customer‑focused solutions</span>
+        <span class="bubble soft" role="listitem">Teamwork</span>
+        <span class="bubble soft" role="listitem">Time management</span>
+      </div>
     </section>
 
     <section id="resume" class="section">
       <h2>Resume</h2>
-      <ul>
-        <li><a href="PrinceBooi_Public_CV.pdf" target="_blank" rel="noopener">Download my CV (PDF)</a></li>
-        <li><a href="WIL-Recomendation Letter.pdf" target="_blank" rel="noopener">Download my WIL Recommendation Letter (PDF)</a></li>
-      </ul>
+      <div style="display:flex; gap:1rem; flex-wrap:wrap; align-items:center;">
+        <button type="button" aria-label="Download CV" onclick="(function(h){const a=document.createElement('a');a.href=h;a.download='';document.body.appendChild(a);a.click();a.remove();})('PrinceBooi_Public_CV.pdf')" style="padding:0.6rem 1rem; border-radius:8px; border:1px solid #2b6cb0; background:#2b6cb0; color:#fff; cursor:pointer;">
+          Download my CV (PDF)
+        </button>
+
+        <button type="button" aria-label="Download WIL Recommendation Letter" onclick="(function(h){const a=document.createElement('a');a.href=h;a.download='';document.body.appendChild(a);a.click();a.remove();})('WIL-Recomendation Letter.pdf')" style="padding:0.6rem 1rem; border-radius:8px; border:1px solid #2b6cb0; background:#2b6cb0; color:#fff; cursor:pointer;">
+          Download my WIL Recommendation Letter (PDF)
+        </button>
+      </div>
     </section>
     <section id="contact" class="section">
       <h2>Contact</h2>
@@ -128,11 +206,9 @@
           <img src="assets/github.jpeg" alt="GitHub icon" style="width:48px; height:48px; object-fit:cover; border-radius:8px;" />
         </a>
       </div>
-      <p style="margin-top:0.75rem;">Click the email icon to copy my address to clipboard.</p>
     </section>
   </main>
   <footer>
     <p>&copy; 2025 Prince Booi. All rights reserved.</p>
   </footer>
-</body>
-</html>
+</body></html>
