@@ -1,206 +1,76 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const navbar = document.querySelector('.navbar');
-  const sections = document.querySelectorAll('main section');
-  const navLinks = document.querySelectorAll('.nav-link');
-  const emailAnchor = document.getElementById('email-copy');
-  const projectsGrid = document.getElementById('github-projects');
-  const projectsStatus = document.getElementById('projects-status');
+  const header = document.querySelector('[data-header]');
+  const menuButton = document.querySelector('.menu-toggle');
+  const navigation = document.querySelector('.primary-nav');
+  const navLinks = [...document.querySelectorAll('.nav-link')];
+  const sections = [...document.querySelectorAll('.page-section[id]')];
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  navLinks.forEach((link) => {
-    link.addEventListener('click', (event) => {
-      const target = document.querySelector(link.getAttribute('href'));
-
-      if (!target || !navbar) return;
-
-      event.preventDefault();
-      window.scrollTo({
-        top: target.offsetTop - navbar.offsetHeight - 12,
-        behavior: 'smooth'
-      });
-    });
-  });
-
-  const setActiveLink = () => {
-    if (!navbar) return;
-
-    let current = '';
-    const offset = navbar.offsetHeight + 36;
-
-    sections.forEach((section) => {
-      if (section.getBoundingClientRect().top <= offset) {
-        current = section.id;
-      }
-    });
-
-    navLinks.forEach((link) => {
-      link.classList.toggle('active', link.getAttribute('href') === `#${current}`);
-    });
+  const closeMenu = () => {
+    menuButton?.setAttribute('aria-expanded', 'false');
+    navigation?.classList.remove('open');
+    header?.classList.remove('menu-open');
+    menuButton?.querySelector('.sr-only')?.replaceChildren('Open navigation');
   };
 
-  setActiveLink();
-  window.addEventListener('scroll', setActiveLink, { passive: true });
+  menuButton?.addEventListener('click', () => {
+    const willOpen = menuButton.getAttribute('aria-expanded') !== 'true';
+    menuButton.setAttribute('aria-expanded', String(willOpen));
+    navigation?.classList.toggle('open', willOpen);
+    header?.classList.toggle('menu-open', willOpen);
+    menuButton.querySelector('.sr-only').textContent = willOpen ? 'Close navigation' : 'Open navigation';
+  });
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('animate-fadein');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.15 });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      closeMenu();
+      menuButton?.focus();
+    }
+  });
 
-  document.querySelectorAll('.section').forEach((section) => observer.observe(section));
+  document.addEventListener('click', (event) => {
+    if (navigation?.classList.contains('open') && !header?.contains(event.target)) closeMenu();
+  });
 
-  if (emailAnchor) {
-    emailAnchor.addEventListener('click', async (event) => {
-      event.preventDefault();
-      const email = emailAnchor.dataset.email || 'booiprince0@gmail.com';
+  navLinks.forEach((link) => link.addEventListener('click', closeMenu));
 
-      try {
-        await navigator.clipboard.writeText(email);
-        showTooltip(emailAnchor, 'Email copied');
-      } catch {
-        const input = document.createElement('input');
-        input.value = email;
-        document.body.appendChild(input);
-        input.select();
+  const updateHeader = () => header?.classList.toggle('scrolled', window.scrollY > 16);
+  updateHeader();
+  window.addEventListener('scroll', updateHeader, { passive: true });
 
-        try {
-          document.execCommand('copy');
-          showTooltip(emailAnchor, 'Email copied');
-        } catch {
-          showTooltip(emailAnchor, 'Copy failed');
-        } finally {
-          input.remove();
-        }
-      }
-    });
+  if ('IntersectionObserver' in window) {
+    const sectionObserver = new IntersectionObserver((entries) => {
+      const visible = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+      if (!visible) return;
+      navLinks.forEach((link) => {
+        const active = link.hash === `#${visible.target.id}`;
+        link.classList.toggle('active', active);
+        if (active) link.setAttribute('aria-current', 'page');
+        else link.removeAttribute('aria-current');
+      });
+    }, { rootMargin: '-25% 0px -60% 0px', threshold: [0, 0.1, 0.5] });
+
+    sections.forEach((section) => sectionObserver.observe(section));
+
+    if (!reduceMotion) {
+      const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+      document.querySelectorAll('.reveal').forEach((element) => revealObserver.observe(element));
+    } else {
+      document.querySelectorAll('.reveal').forEach((element) => element.classList.add('is-visible'));
+    }
+  } else {
+    document.querySelectorAll('.reveal').forEach((element) => element.classList.add('is-visible'));
   }
 
-  if (projectsGrid) {
-    loadGitHubProjects(projectsGrid, projectsStatus);
-  }
+  document.querySelector('[data-year]').textContent = new Date().getFullYear();
 });
-
-async function loadGitHubProjects(projectsGrid, projectsStatus) {
-  const username = projectsGrid.dataset.githubUser || 'PBooi70';
-  const endpoint = `https://api.github.com/users/${username}/repos?sort=updated&direction=desc&per_page=100`;
-
-  try {
-    const response = await fetch(endpoint, {
-      headers: { Accept: 'application/vnd.github+json' }
-    });
-
-    if (!response.ok) {
-      throw new Error(`GitHub request failed: ${response.status}`);
-    }
-
-    const repos = await response.json();
-    const projects = repos
-      .filter((repo) => !repo.fork && !repo.archived)
-      .sort((a, b) => new Date(b.pushed_at || b.updated_at) - new Date(a.pushed_at || a.updated_at))
-      .slice(0, 6);
-
-    if (!projects.length) {
-      throw new Error('No public repositories found');
-    }
-
-    projectsGrid.replaceChildren(...projects.map(createProjectCard));
-
-    if (projectsStatus) {
-      projectsStatus.textContent = `Showing ${projects.length} latest public repositories from GitHub.`;
-    }
-  } catch (error) {
-    console.warn(error);
-
-    if (projectsStatus) {
-      projectsStatus.textContent = 'Showing featured projects. Live GitHub repositories could not be loaded right now.';
-    }
-  }
-}
-
-function createProjectCard(repo) {
-  const card = document.createElement('article');
-  card.className = 'project-card';
-
-  const content = document.createElement('div');
-  const kicker = document.createElement('p');
-  kicker.className = 'project-kicker';
-  kicker.textContent = repo.language || 'GitHub Repository';
-
-  const title = document.createElement('h3');
-  const titleLink = document.createElement('a');
-  titleLink.href = repo.html_url;
-  titleLink.target = '_blank';
-  titleLink.rel = 'noopener';
-  titleLink.textContent = formatRepoName(repo.name);
-  title.appendChild(titleLink);
-
-  const description = document.createElement('p');
-  description.textContent = repo.description || 'Public repository from Prince Booi on GitHub.';
-
-  content.append(kicker, title, description);
-
-  const meta = document.createElement('div');
-  meta.className = 'project-meta';
-  meta.append(
-    createMetaItem('Updated', formatDate(repo.pushed_at || repo.updated_at)),
-    createMetaItem('Stars', repo.stargazers_count)
-  );
-
-  if (repo.topics?.length) {
-    meta.append(createMetaItem('Topics', repo.topics.slice(0, 3).join(', ')));
-  }
-
-  const repoLink = document.createElement('a');
-  repoLink.className = 'text-link';
-  repoLink.href = repo.html_url;
-  repoLink.target = '_blank';
-  repoLink.rel = 'noopener';
-  repoLink.textContent = 'View on GitHub';
-
-  card.append(content, meta, repoLink);
-  return card;
-}
-
-function createMetaItem(label, value) {
-  const item = document.createElement('span');
-  item.textContent = `${label}: ${value}`;
-  return item;
-}
-
-function formatRepoName(name) {
-  return name
-    .replace(/[-_]+/g, ' ')
-    .replace(/\b\w/g, (letter) => letter.toUpperCase());
-}
-
-function formatDate(value) {
-  if (!value) return 'Recently';
-
-  return new Intl.DateTimeFormat('en', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
-  }).format(new Date(value));
-}
-
-function showTooltip(target, text) {
-  document.getElementById('temp-tooltip')?.remove();
-
-  const tooltip = document.createElement('div');
-  tooltip.id = 'temp-tooltip';
-  tooltip.textContent = text;
-  document.body.appendChild(tooltip);
-
-  const rect = target.getBoundingClientRect();
-  tooltip.style.left = `${window.scrollX + rect.left + rect.width / 2 - tooltip.offsetWidth / 2}px`;
-  tooltip.style.top = `${window.scrollY + rect.top - tooltip.offsetHeight - 10}px`;
-
-  requestAnimationFrame(() => tooltip.classList.add('visible'));
-
-  window.setTimeout(() => {
-    tooltip.classList.remove('visible');
-    window.setTimeout(() => tooltip.remove(), 180);
-  }, 1500);
-}
